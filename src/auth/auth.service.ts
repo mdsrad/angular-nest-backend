@@ -4,9 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import * as bcryptjs from 'bcryptjs';
-
 import { LoginDto, UpdateAuthDto, CreateUserDto, RegisterUserDto } from './dto';
-
 import { User } from './entities/user.entity';
 
 import { JwtPayload } from './interfaces/jwt-payload';
@@ -75,8 +73,14 @@ export class AuthService {
 
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  findAll(): Promise<User[]> {
+    return this.userModel.find();
+  }
+
+  async finduserById(id: string){
+    const user = await this.userModel.findById( id );
+    const { password, ...rest} = user.toJSON();
+    return rest;
   }
 
   findOne(id: number) {
