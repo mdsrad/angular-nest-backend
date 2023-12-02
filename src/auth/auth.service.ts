@@ -1,14 +1,13 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
-import { LoginDto } from './dto/login.dto';
-import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
+import { LoginResponse } from './interfaces/login-response';
+import { CreateUserDto, UpdateAuthDto, LoginDto, RegisterUserDto } from './dto/index';
+
 
 @Injectable()
 export class AuthService {
@@ -42,7 +41,7 @@ export class AuthService {
     }
   }
 
-  async login( loginDto: LoginDto ){
+  async login( loginDto: LoginDto ): Promise<LoginResponse>{
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email })
     if ( !user ){
@@ -59,8 +58,23 @@ export class AuthService {
     }
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async register( registerDto: RegisterUserDto): Promise<LoginResponse> {
+
+    const user = await this.create( registerDto );
+    return {
+      user: user,
+      token: this.getJwtoken({ id: user._id })
+    }
+  }
+
+  findAll():Promise<User[]> {
+    return this.userModel.find();
+  }
+
+  async findUserById( id: string ){
+    const user = await this.userModel.findById( id );
+    const { password, ...rest } = user.toJSON();
+    return rest;
   }
 
   findOne(id: number) {
