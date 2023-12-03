@@ -3,19 +3,21 @@ import { DashboardService } from './dashboard.service';
 import { CreateDashboardDto } from './dto/create-dashboard.dto';
 import { UpdateDashboardDto } from './dto/update-dashboard.dto';
 import { NewRecipeDto } from './dto/new-recipe.dto';
+import { Recipe } from './entities/recipe.entity';
 
-@Controller('dashboard/new-recipe')
+@Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
-  @Post()
+  @Post('/new-recipe')
   create(@Body() newRecipeDto: NewRecipeDto) {
     return this.dashboardService.create( newRecipeDto );
   }
 
-  @Get()
-  findAll() {
-    return this.dashboardService.findAll();
+  @Get('/list')
+  findAll(req: Request) {
+    const recipe = req['recipe'] as Recipe;
+    return recipe;
   }
 
   @Get(':id')

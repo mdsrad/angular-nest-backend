@@ -35,8 +35,8 @@ export class DashboardService {
     await this.create( createRecipeDto );
   }
 
-  findAll() {
-    return `This action returns all dashboard`;
+  findAll(): Promise<Recipe[]> {
+    return this.recipeModel.find();
   }
 
   findOne(id: number) {
